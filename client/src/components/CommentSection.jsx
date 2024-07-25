@@ -1,4 +1,3 @@
-import { Alert, Button, Modal, TextInput, Textarea } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,6 +12,7 @@ export default function CommentSection({ postId }) {
   const [showModal, setShowModal] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (comment.length > 200) {
@@ -103,13 +103,13 @@ export default function CommentSection({ postId }) {
         method: 'DELETE',
       });
       if (res.ok) {
-        const data = await res.json();
         setComments(comments.filter((comment) => comment._id !== commentId));
       }
     } catch (error) {
       console.log(error.message);
     }
   };
+
   return (
     <div className='max-w-2xl mx-auto w-full p-3'>
       {currentUser ? (
@@ -140,25 +140,29 @@ export default function CommentSection({ postId }) {
           onSubmit={handleSubmit}
           className='border border-teal-500 rounded-md p-3'
         >
-          <Textarea
+          <textarea
             placeholder='Add a comment...'
             rows='3'
             maxLength='200'
             onChange={(e) => setComment(e.target.value)}
             value={comment}
+            className='w-full p-2 border rounded'
           />
           <div className='flex justify-between items-center mt-5'>
             <p className='text-gray-500 text-xs'>
               {200 - comment.length} characters remaining
             </p>
-            <Button outline gradientDuoTone='purpleToBlue' type='submit'>
+            <button
+              type='submit'
+              className='px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded hover:opacity-80'
+            >
               Submit
-            </Button>
+            </button>
           </div>
           {commentError && (
-            <Alert color='failure' className='mt-5'>
+            <div className='mt-5 p-3 border border-red-300 bg-red-100 text-red-700 rounded'>
               {commentError}
-            </Alert>
+            </div>
           )}
         </form>
       )}
@@ -186,33 +190,30 @@ export default function CommentSection({ postId }) {
           ))}
         </>
       )}
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        popup
-        size='md'
-      >
-        <Modal.Header />
-        <Modal.Body>
-          <div className='text-center'>
-            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
-            <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
+      {showModal && (
+        <div className='fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50'>
+          <div className='bg-white p-6 rounded shadow-lg max-w-sm mx-auto'>
+            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 mb-4 mx-auto' />
+            <h3 className='mb-5 text-lg text-gray-500'>
               Are you sure you want to delete this comment?
             </h3>
             <div className='flex justify-center gap-4'>
-              <Button
-                color='failure'
+              <button
+                className='px-4 py-2 bg-red-500 text-white rounded hover:opacity-80'
                 onClick={() => handleDelete(commentToDelete)}
               >
                 Yes, I'm sure
-              </Button>
-              <Button color='gray' onClick={() => setShowModal(false)}>
+              </button>
+              <button
+                className='px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100'
+                onClick={() => setShowModal(false)}
+              >
                 No, cancel
-              </Button>
+              </button>
             </div>
           </div>
-        </Modal.Body>
-      </Modal>
+        </div>
+      )}
     </div>
   );
 }

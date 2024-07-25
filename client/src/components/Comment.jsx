@@ -2,14 +2,13 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { FaThumbsUp } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-import { Button, Textarea } from 'flowbite-react';
-import { set } from 'mongoose';
 
 export default function Comment({ comment, onLike, onEdit, onDelete }) {
   const [user, setUser] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
   const { currentUser } = useSelector((state) => state.user);
+
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -49,6 +48,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
       console.log(error.message);
     }
   };
+
   return (
     <div className='flex p-4 border-b dark:border-gray-600 text-sm'>
       <div className='flex-shrink-0 mr-3'>
@@ -69,29 +69,26 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
         </div>
         {isEditing ? (
           <>
-            <Textarea
-              className='mb-2'
+            <textarea
+              className='mb-2 p-2 border rounded'
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
             />
             <div className='flex justify-end gap-2 text-xs'>
-              <Button
+              <button
                 type='button'
-                size='sm'
-                gradientDuoTone='purpleToBlue'
+                className='px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded hover:opacity-80'
                 onClick={handleSave}
               >
                 Save
-              </Button>
-              <Button
+              </button>
+              <button
                 type='button'
-                size='sm'
-                gradientDuoTone='purpleToBlue'
-                outline
+                className='px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-100'
                 onClick={() => setIsEditing(false)}
               >
                 Cancel
-              </Button>
+              </button>
             </div>
           </>
         ) : (

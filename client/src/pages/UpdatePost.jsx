@@ -1,4 +1,3 @@
-import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {
@@ -21,33 +20,29 @@ export default function UpdatePost() {
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
   const { postId } = useParams();
-
   const navigate = useNavigate();
-    const { currentUser } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    try {
-      const fetchPost = async () => {
+    const fetchPost = async () => {
+      try {
         const res = await fetch(`/api/post/getposts?postId=${postId}`);
         const data = await res.json();
         if (!res.ok) {
-          console.log(data.message);
           setPublishError(data.message);
           return;
         }
-        if (res.ok) {
-          setPublishError(null);
-          setFormData(data.posts[0]);
-        }
-      };
+        setFormData(data.posts[0]);
+        setPublishError(null);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
 
-      fetchPost();
-    } catch (error) {
-      console.log(error.message);
-    }
+    fetchPost();
   }, [postId]);
 
-  const handleUpdloadImage = async () => {
+  const handleUploadImage = async () => {
     try {
       if (!file) {
         setImageUploadError('Please select an image');
@@ -58,6 +53,7 @@ export default function UpdatePost() {
       const fileName = new Date().getTime() + '-' + file.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
+
       uploadTask.on(
         'state_changed',
         (snapshot) => {
@@ -83,6 +79,7 @@ export default function UpdatePost() {
       console.log(error);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -98,56 +95,42 @@ export default function UpdatePost() {
         setPublishError(data.message);
         return;
       }
-
-      if (res.ok) {
-        setPublishError(null);
-        navigate(`/post/${data.slug}`);
-      }
+      setPublishError(null);
+      navigate(`/post/${data.slug}`);
     } catch (error) {
       setPublishError('Something went wrong');
     }
   };
+
   return (
-    <div className='p-3 max-w-3xl mx-auto min-h-screen'>
-      <h1 className='text-center text-3xl my-7 font-semibold'>Update post</h1>
-      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-        <div className='flex flex-col gap-4 sm:flex-row justify-between'>
-          <TextInput
+    <div className='p-6 max-w-4xl mx-auto min-h-screen'>
+      <h1 className='text-center text-3xl my-7 font-semibold'>Update Post</h1>
+      <form className='flex flex-col gap-6' onSubmit={handleSubmit}>
+        <div className='flex flex-col gap-4 sm:flex-row sm:gap-6'>
+          <input
             type='text'
             placeholder='Title'
             required
             id='title'
-            className='flex-1'
+            className='border border-gray-300 rounded-md p-2 flex-1'
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
-            value={formData.title}
+            value={formData.title || ''}
           />
-          <Select
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-            value={formData.category}
-          >
-            <option value='uncategorized'>Select a category</option>
-            <option value='javascript'>JavaScript</option>
-            <option value='reactjs'>React.js</option>
-            <option value='nextjs'>Next.js</option>
-          </Select>
         </div>
-        <div className='flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3'>
-          <FileInput
+        <div className='flex flex-col gap-4 items-center border-4 border-teal-500 border-dotted p-4'>
+          <input
             type='file'
             accept='image/*'
             onChange={(e) => setFile(e.target.files[0])}
+            className='mb-4'
           />
-          <Button
+          <button
             type='button'
-            gradientDuoTone='purpleToBlue'
-            size='sm'
-            outline
-            onClick={handleUpdloadImage}
+            onClick={handleUploadImage}
             disabled={imageUploadProgress}
+            className='bg-gradient-to-r from-purple-500 to-blue-500 text-white py-2 px-4 rounded-md flex items-center'
           >
             {imageUploadProgress ? (
               <div className='w-16 h-16'>
@@ -159,19 +142,23 @@ export default function UpdatePost() {
             ) : (
               'Upload Image'
             )}
-          </Button>
+          </button>
         </div>
-        {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
+        {imageUploadError && (
+          <div className='bg-red-100 border border-red-400 text-red-700 rounded p-3'>
+            {imageUploadError}
+          </div>
+        )}
         {formData.image && (
           <img
             src={formData.image}
-            alt='upload'
-            className='w-full h-72 object-cover'
+            alt='Uploaded'
+            className='w-full h-72 object-cover mt-4'
           />
         )}
         <ReactQuill
           theme='snow'
-          value={formData.content}
+          value={formData.content || ''}
           placeholder='Write something...'
           className='h-72 mb-12'
           required
@@ -179,13 +166,16 @@ export default function UpdatePost() {
             setFormData({ ...formData, content: value });
           }}
         />
-        <Button type='submit' gradientDuoTone='purpleToPink'>
-          Update post
-        </Button>
+        <button
+          type='submit'
+          className='bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded-md'
+        >
+          Update Post
+        </button>
         {publishError && (
-          <Alert className='mt-5' color='failure'>
+          <div className='bg-red-100 border border-red-400 text-red-700 rounded p-3 mt-5'>
             {publishError}
-          </Alert>
+          </div>
         )}
       </form>
     </div>

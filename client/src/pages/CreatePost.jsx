@@ -1,4 +1,3 @@
-import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {
@@ -22,7 +21,7 @@ export default function CreatePost() {
 
   const navigate = useNavigate();
 
-  const handleUpdloadImage = async () => {
+  const handleUploadImage = async () => {
     try {
       if (!file) {
         setImageUploadError('Please select an image');
@@ -58,6 +57,7 @@ export default function CreatePost() {
       console.log(error);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -82,45 +82,34 @@ export default function CreatePost() {
       setPublishError('Something went wrong');
     }
   };
+
   return (
-    <div className='p-3 max-w-3xl mx-auto min-h-screen'>
-      <h1 className='text-center text-3xl my-7 font-semibold'>Create a post</h1>
-      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-        <div className='flex flex-col gap-4 sm:flex-row justify-between'>
-          <TextInput
+    <div className='p-4 max-w-3xl mx-auto min-h-screen'>
+      <h1 className='text-3xl font-semibold text-center my-8'>Create a Post</h1>
+      <form className='space-y-6' onSubmit={handleSubmit}>
+        <div className='flex flex-col sm:flex-row gap-4'>
+          <input
             type='text'
             placeholder='Title'
             required
-            id='title'
-            className='flex-1'
+            className='flex-1 p-2 border border-gray-300 rounded'
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
           />
-          <Select
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-          >
-            <option value='uncategorized'>Select a category</option>
-            <option value='javascript'>JavaScript</option>
-            <option value='reactjs'>React.js</option>
-            <option value='nextjs'>Next.js</option>
-          </Select>
         </div>
-        <div className='flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3'>
-          <FileInput
+        <div className='border-4 border-dotted border-teal-500 p-4 flex items-center gap-4'>
+          <input
             type='file'
             accept='image/*'
+            className='p-2'
             onChange={(e) => setFile(e.target.files[0])}
           />
-          <Button
+          <button
             type='button'
-            gradientDuoTone='purpleToBlue'
-            size='sm'
-            outline
-            onClick={handleUpdloadImage}
+            onClick={handleUploadImage}
             disabled={imageUploadProgress}
+            className='flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg shadow-md hover:from-purple-600 hover:to-blue-600 transition duration-300'
           >
             {imageUploadProgress ? (
               <div className='w-16 h-16'>
@@ -132,32 +121,33 @@ export default function CreatePost() {
             ) : (
               'Upload Image'
             )}
-          </Button>
+          </button>
         </div>
-        {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
+        {imageUploadError && <div className='text-red-600'>{imageUploadError}</div>}
         {formData.image && (
           <img
             src={formData.image}
-            alt='upload'
-            className='w-full h-72 object-cover'
+            alt='Upload preview'
+            className='w-full h-72 object-cover mt-4'
           />
         )}
         <ReactQuill
           theme='snow'
           placeholder='Write something...'
-          className='h-72 mb-12'
+          className='h-72 mb-6'
           required
           onChange={(value) => {
             setFormData({ ...formData, content: value });
           }}
         />
-        <Button type='submit' gradientDuoTone='purpleToPink'>
+        <button
+          type='submit'
+          className='px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md hover:from-purple-600 hover:to-pink-600 transition duration-300'
+        >
           Publish
-        </Button>
+        </button>
         {publishError && (
-          <Alert className='mt-5' color='failure'>
-            {publishError}
-          </Alert>
+          <div className='text-red-600 mt-4'>{publishError}</div>
         )}
       </form>
     </div>
