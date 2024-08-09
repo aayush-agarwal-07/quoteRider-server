@@ -7,8 +7,8 @@ import postRoutes from './routes/post.route.js';
 import videoRoutes from './routes/video.route.js';
 import commentRoutes from './routes/comment.route.js';
 import cookieParser from 'cookie-parser';
-import cors from 'cors'; // Importing cors
 import path from 'path';
+import cors from 'cors'; 
 
 dotenv.config();
 
@@ -25,13 +25,7 @@ const __dirname = path.resolve();
 
 const app = express();
 
-// Enable CORS
-const allowedOrigins = ['http://localhost:5173', 'https://your-vercel-domain.vercel.app'];
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true, // If your frontend needs to send cookies
-}));
-
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
